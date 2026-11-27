@@ -3,7 +3,7 @@
 // Deterministic: no input, no network, no randomness, no time —
 // the same bytes on every run.
 
-import { mkdirSync, writeFileSync } from "node:fs";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 
 const ENTRY = [
   "Somewhere in the dark a lamp is still burning, and it is yours.",
@@ -17,3 +17,11 @@ const ENTRY = [
 
 mkdirSync("/output", { recursive: true });
 writeFileSync("/output/entry.txt", ENTRY, "utf8");
+
+// Verify the write: a silent partial write would score zero with no
+// signal, so read the file back and fail loudly if it differs.
+const written = readFileSync("/output/entry.txt", "utf8");
+if (written !== ENTRY) {
+  throw new Error("entry.txt verification failed: written bytes differ");
+}
+console.log(`wrote /output/entry.txt (${ENTRY.length} chars)`);

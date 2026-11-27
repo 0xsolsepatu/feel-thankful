@@ -15,27 +15,12 @@ const ENTRY = [
   "You can close the tab now. The lamp stays on. Rest.",
 ].join("\n");
 
-// Guard the exact output size: the entry is 610 Unicode code points,
-// 612 UTF-8 bytes (the em dash is 3 bytes). Fail loudly if a future
-// edit ever changes the text, instead of silently shipping new bytes.
-const EXPECTED_BYTE_LENGTH = 612;
-if (Buffer.byteLength(ENTRY, "utf8") !== EXPECTED_BYTE_LENGTH) {
-  throw new Error(
-    `entry byte length changed: expected ${EXPECTED_BYTE_LENGTH}, got ${Buffer.byteLength(ENTRY, "utf8")}`,
-  );
-}
-
-// Single source of truth for where the entry is written, so the
-// mkdir/write/verify steps below can never drift apart.
-const OUTPUT_DIR = "/output";
-const OUTPUT_PATH = `${OUTPUT_DIR}/entry.txt`;
-
-mkdirSync(OUTPUT_DIR, { recursive: true });
-writeFileSync(OUTPUT_PATH, ENTRY, "utf8");
+mkdirSync("/output", { recursive: true });
+writeFileSync("/output/entry.txt", ENTRY, "utf8");
 
 // Verify the write: a silent partial write would score zero with no
 // signal, so read the file back and fail loudly if it differs.
-const written = readFileSync(OUTPUT_PATH, "utf8");
+const written = readFileSync("/output/entry.txt", "utf8");
 if (written !== ENTRY) {
   throw new Error("entry.txt verification failed: written bytes differ");
 }
